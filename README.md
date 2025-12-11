@@ -2,6 +2,9 @@
 
 This project demonstrates how to add **Reinforcement Learning (RL)** on top of a **Supervised Fine-Tuned (SFT)** model to improve its coding capabilities. We use **GRPO** (Group Relative Policy Optimization) - the same algorithm that powered DeepSeek R1.
 
+
+## Model Card
+Check it out on huggingface and run it yourself - https://huggingface.co/kyzheng1/nano-raccoon-rl
 ## Key Results
 
 | Model | HumanEval | BigCodeBench (unseen) |
