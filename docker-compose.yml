@@ -1,0 +1,62 @@
+# Docker Compose for RL Training
+# Uses local fast storage for model weights
+
+version: "3.8"
+
+services:
+  train:
+    build: .
+    image: rl-training:latest
+    container_name: rl-training
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - HF_HOME=/workspace/hf_cache
+      - TRANSFORMERS_CACHE=/workspace/hf_cache
+      - WANDB_API_KEY=${WANDB_API_KEY:-}
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY:-}
+    volumes:
+      # Mount project code from NFS (small, no issue)
+      - ./:/workspace/project:ro
+      # Mount local fast storage for model cache (CRITICAL for speed)
+      # Using /raid (local NVMe) - 1.6TB free, FAST!
+      - /raid/${USER}/hf_cache:/workspace/hf_cache
+      # Output directory (can be on NFS, writes are less frequent)
+      - ./outputs:/workspace/outputs
+    working_dir: /workspace/project
+    shm_size: "16gb"  # Needed for DataLoader with multiple workers
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command: ["python", "scripts/train_rl_poc.py"]
+
+  # Interactive shell for debugging
+  shell:
+    build: .
+    image: rl-training:latest
+    container_name: rl-shell
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - HF_HOME=/workspace/hf_cache
+    volumes:
+      - ./:/workspace/project
+      - /raid/${USER}/hf_cache:/workspace/hf_cache
+      - ./outputs:/workspace/outputs
+    working_dir: /workspace/project
+    shm_size: "16gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    stdin_open: true
+    tty: true
+    command: ["bash"]
+

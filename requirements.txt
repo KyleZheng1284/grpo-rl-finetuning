@@ -1,0 +1,23 @@
+# Core ML
+torch>=2.1.0
+transformers>=4.45.0
+datasets>=2.18.0
+accelerate>=0.27.0
+
+# RL Training
+trl>=0.12.0
+peft>=0.10.0
+
+# Fast inference (for data generation)
+vllm>=0.6.0  # Optional: for generating synthetic data locally
+
+# Flash Attention (for H200)
+flash-attn>=2.5.0
+
+# Evaluation
+evaluate>=0.4.0
+
+# Utilities
+wandb
+tqdm
+openai  # Optional: for API-based data generation
